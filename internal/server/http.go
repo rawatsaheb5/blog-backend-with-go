@@ -15,7 +15,7 @@ func Start(cfg config.Config, db *gorm.DB) {
 	// r.Use(middleware.Auth())
 
 	api := r.Group("/api")
-	user.RegisterRoutes(api, db)
+	user.RegisterRoutes(api, db, cfg.JWTKey)
 
 	r.Run(":" + cfg.Port)
 }
