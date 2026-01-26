@@ -1,3 +1,7 @@
+package user
+
+import "time"
+
 type User struct{
 	ID string `gorm:"primaryKey"`
 	Username string `gorm:"unique"`

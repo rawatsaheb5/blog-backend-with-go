@@ -1,3 +1,9 @@
+package config
+
+import (
+	"os"
+)
+
 type Config struct{
 	DBUrl string
 	Port string
@@ -9,6 +15,6 @@ func LoadConfig() Config{
 	return Config{
 		DBUrl: os.Getenv("DB_URL"),
 		Port: os.Getenv("PORT"),
-		JWTKey: os.Getenv("JWT_KEY"),
+		JWTKey: os.Getenv("JWT_SECRET"),
 	}
 }

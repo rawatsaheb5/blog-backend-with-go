@@ -1,3 +1,9 @@
+package user
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
 func Register(svc *Service) gin.HandlerFunc {
     return func(c *gin.Context) {
         var req struct {
