@@ -8,6 +8,7 @@ import (
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/database"
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/modules/user"
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/server"
+	"github.com/rawatsaheb5/blog-backend-with-go/pkg/logger"
 )
 
 func main() {
@@ -17,13 +18,22 @@ func main() {
 	}
 
 	cfg := config.LoadConfig()
+
+	// Initialize logger based on environment
+	if err := logger.Init(cfg.Environment); err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+	defer logger.Sync()
+
+	logger.Sugar.Infof("Starting application in %s environment", cfg.Environment)
+
 	db := database.Connect(cfg)
 
 	// Run database migrations
 	if err := db.AutoMigrate(&user.User{}); err != nil {
-		log.Fatal("Failed to migrate database:", err)
+		logger.Sugar.Fatalf("Failed to migrate database: %v", err)
 	}
-	log.Println("Database migration completed successfully")
+	logger.Sugar.Info("Database migration completed successfully")
 
 	server.Start(cfg, db)
 }

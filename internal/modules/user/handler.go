@@ -1,7 +1,7 @@
 package user
 
 import (
-	"log"
+	
 	"github.com/gin-gonic/gin"
 )
 

@@ -6,14 +6,23 @@ import (
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/middleware"
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/modules/post"
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/modules/user"
+	"github.com/rawatsaheb5/blog-backend-with-go/pkg/logger"
 	"gorm.io/gorm"
 )
 
 func Start(cfg config.Config, db *gorm.DB) {
+	// Set Gin mode based on environment
+	if cfg.Environment == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+	}
+
 	r := gin.New()
 
-	// Optional: Add logging middleware for all routes
-	// r.Use(middleware.Logging())
+	// Add zap logger and recovery middleware
+	r.Use(logger.GinLogger())
+	r.Use(logger.GinRecovery())
 
 	api := r.Group("/api")
 
