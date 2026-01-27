@@ -18,7 +18,7 @@ func NewService(repo Repository, jwtSecret string) *Service {
 	return &Service{
 		repo: repo,
 		jwtSecret: jwtSecret,
-		}
+	}
 }
 
 func (s *Service) Register(email, password string) error {
