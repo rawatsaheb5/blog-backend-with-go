@@ -8,6 +8,7 @@ import (
 func Register(svc *Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
+			Name     string `json:"name" binding:"required"`
 			Email    string `json:"email" binding:"required"`
 			Password string `json:"password" binding:"required"`
 		}
@@ -17,7 +18,7 @@ func Register(svc *Service) gin.HandlerFunc {
 			return
 		}
 
-		if err := svc.Register(req.Email, req.Password); err != nil {
+		if err := svc.Register(req.Email, req.Password, req.Name); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
@@ -60,7 +61,7 @@ func Login(svc *Service) gin.HandlerFunc {
 				"user": gin.H{
 					"id":       user.ID,
 					"email":    user.Email,
-					"name": user.name,
+					"name": user.Name,
 				},
 			},
 		})

@@ -21,9 +21,9 @@ func NewService(repo Repository, jwtSecret string) *Service {
 	}
 }
 
-func (s *Service) Register(email, password string) error {
+func (s *Service) Register(email, password string, name string) error {
 	hash := HashPassword(password)
-	user := &User{Email: email, HashedPassword: hash}
+	user := &User{Email: email, HashedPassword: hash, Name: name, IsActive: true}
 	return s.repo.CreateUser(user)
 }
 
