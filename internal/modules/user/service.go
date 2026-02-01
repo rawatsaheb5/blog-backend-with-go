@@ -23,7 +23,7 @@ func NewService(repo Repository, jwtSecret string) *Service {
 
 func (s *Service) Register(email, password string) error {
 	hash := HashPassword(password)
-	user := &User{Email: email, Password: hash}
+	user := &User{Email: email, HashedPassword: hash}
 	return s.repo.CreateUser(user)
 }
 
@@ -33,7 +33,7 @@ func (s *Service) Login(email, password string) (*User, string, error) {
 		return nil, "", errors.New("invalid email or password")
 	}
 
-	if !VerifyPassword(password, user.Password) {
+	if !VerifyPassword(password, user.HashedPassword) {
 		return nil, "", errors.New("invalid password")
 	}
 

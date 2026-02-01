@@ -60,7 +60,7 @@ func Login(svc *Service) gin.HandlerFunc {
 				"user": gin.H{
 					"id":       user.ID,
 					"email":    user.Email,
-					"username": user.Username,
+					"name": user.name,
 				},
 			},
 		})
