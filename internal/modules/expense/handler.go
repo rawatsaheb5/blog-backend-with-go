@@ -3,6 +3,7 @@ package expense
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -49,6 +50,21 @@ func (h *Handler) ListGroupExpenses(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": exps})
+}
+
+func (h *Handler) GetExpenseByID(c *gin.Context) {
+	expenseIDStr := c.Param("expenseId")
+	exid, err := strconv.ParseUint(expenseIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid expenseId"})
+		return
+	}
+	exp, err := h.svc.GetExpenseByID(exid)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "expense not found"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": exp})
 }
 
 func (h *Handler) CreateExpense(c *gin.Context) {

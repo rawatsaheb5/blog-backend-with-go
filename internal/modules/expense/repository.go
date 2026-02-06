@@ -7,6 +7,7 @@ import (
 type Repository interface {
 	Create(exp *Expense) error
 	ListByGroupID(groupID uint64) ([]Expense, error)
+	GetByID(expenseID uint64) (*Expense, error)
 }
 
 type repository struct { db *gorm.DB }
@@ -21,4 +22,12 @@ func (r *repository) ListByGroupID(groupID uint64) ([]Expense, error) {
 		return nil, err
 	}
 	return exps, nil
+}
+
+func (r *repository) GetByID(expenseID uint64) (*Expense, error) {
+	var exp Expense
+	if err := r.db.First(&exp, expenseID).Error; err != nil {
+		return nil, err
+	}
+	return &exp, nil
 }
