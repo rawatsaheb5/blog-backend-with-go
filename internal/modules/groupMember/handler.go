@@ -73,3 +73,30 @@ func (h *Handler) LeaveGroup(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "left group"})
 }
+
+// InviteMember handles POST /group/:groupId/invite to generate an invite link and (stub) send email
+func (h *Handler) InviteMember(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	groupIDParam := c.Param("groupId")
+	gid, err := strconv.ParseUint(groupIDParam, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid groupId"})
+		return
+	}
+	var body struct{ Email string `json:"email" binding:"required,email"` }
+	if err := c.ShouldBindJSON(&body); err != nil || body.Email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "valid email is required"})
+		return
+	}
+	link, err := h.service.GenerateInviteLink(gid, userID, body.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	// TODO: integrate actual email sending service here. For now, return the link.
+	c.JSON(http.StatusOK, gin.H{"message": "invite generated", "inviteLink": link})
+}
