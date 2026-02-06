@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/config"
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/database"
+	"github.com/rawatsaheb5/blog-backend-with-go/internal/modules/group"
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/modules/user"
 	"github.com/rawatsaheb5/blog-backend-with-go/internal/server"
 	"github.com/rawatsaheb5/blog-backend-with-go/pkg/logger"
@@ -30,7 +31,7 @@ func main() {
 	db := database.Connect(cfg)
 
 	// Run database migrations
-	if err := db.AutoMigrate(&user.User{}); err != nil {
+	if err := db.AutoMigrate(&user.User{}, &group.Group{}); err != nil {
 		logger.Sugar.Fatalf("Failed to migrate database: %v", err)
 	}
 	logger.Sugar.Info("Database migration completed successfully")
