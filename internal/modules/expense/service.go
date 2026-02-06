@@ -10,6 +10,7 @@ import (
 
 type Service interface {
 	CreateExpense(input CreateExpenseInput) (*Expense, error)
+	ListGroupExpenses(groupID uint64) ([]Expense, error)
 }
 
 type service struct {
@@ -20,6 +21,10 @@ type service struct {
 
 func NewService(expRepo Repository, splitRepo expensesplit.Repository, gmRepo groupMember.Repository) Service {
 	return &service{expRepo: expRepo, splitRepo: splitRepo, gmRepo: gmRepo}
+}
+
+func (s *service) ListGroupExpenses(groupID uint64) ([]Expense, error) {
+	return s.expRepo.ListByGroupID(groupID)
 }
 
 type ParticipantInput struct {
