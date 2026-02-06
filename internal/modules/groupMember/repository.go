@@ -7,6 +7,7 @@ import (
 type Repository interface {
 	ListByGroupID(groupID uint64) ([]GroupMember, error)
 	ListGroupIDsByUserID(userID uint64) ([]uint64, error)
+	UpdateStatus(groupID uint64, userID uint64, status string) (int64, error)
 }
 
 type repository struct {
@@ -36,4 +37,9 @@ func (r *repository) ListGroupIDsByUserID(userID uint64) ([]uint64, error) {
 		groupIDs = append(groupIDs, gm.GroupID)
 	}
 	return groupIDs, nil
+}
+
+func (r *repository) UpdateStatus(groupID uint64, userID uint64, status string) (int64, error) {
+	res := r.db.Model(&GroupMember{}).Where("group_id = ? AND user_id = ?", groupID, userID).Update("status", status)
+	return res.RowsAffected, res.Error
 }

@@ -1,4 +1,4 @@
-package groupMember
+package group
 
 import (
 	"github.com/gin-gonic/gin"
@@ -10,7 +10,6 @@ func RegisterRoutes(r *gin.RouterGroup, db *gorm.DB) {
 	svc := NewService(repo)
 	h := NewHandler(svc)
 
-	r.GET("/group", h.GetUserGroups)
-	r.GET("/group/:groupId/members", h.GetAllGroupMembers)
-	r.POST("/group/:groupId/leave", h.LeaveGroup)
+	// POST /group -> create a group
+	r.POST("/group", h.CreateGroup)
 }

@@ -48,3 +48,28 @@ func (h *Handler) GetUserGroups(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"data": groupIDs})
 }
+
+// LeaveGroup handles POST /group/:groupId/leave to set status = LEFT for the current user
+func (h *Handler) LeaveGroup(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	groupIDParam := c.Param("groupId")
+	gid, err := strconv.ParseUint(groupIDParam, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid groupId"})
+		return
+	}
+	success, err := h.service.LeaveGroup(gid, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if !success {
+		c.JSON(http.StatusNotFound, gin.H{"error": "membership not found"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "left group"})
+}
