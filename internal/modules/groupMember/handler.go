@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rawatsaheb5/blog-backend-with-go/internal/middleware"
 )
 
 type Handler struct {
@@ -31,4 +32,19 @@ func (h *Handler) GetAllGroupMembers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": members})
+}
+
+// GetUserGroups handles GET /group to list group IDs for the authenticated user
+func (h *Handler) GetUserGroups(c *gin.Context) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	groupIDs, err := h.service.GetUserGroupIDs(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": groupIDs})
 }

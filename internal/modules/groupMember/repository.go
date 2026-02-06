@@ -6,6 +6,7 @@ import (
 
 type Repository interface {
 	ListByGroupID(groupID uint64) ([]GroupMember, error)
+	ListGroupIDsByUserID(userID uint64) ([]uint64, error)
 }
 
 type repository struct {
@@ -22,4 +23,17 @@ func (r *repository) ListByGroupID(groupID uint64) ([]GroupMember, error) {
 		return nil, err
 	}
 	return members, nil
+}
+
+func (r *repository) ListGroupIDsByUserID(userID uint64) ([]uint64, error) {
+	var groupIDs []uint64
+	rows := []GroupMember{}
+	if err := r.db.Select("group_id").Where("user_id = ?", userID).Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	groupIDs = make([]uint64, 0, len(rows))
+	for _, gm := range rows {
+		groupIDs = append(groupIDs, gm.GroupID)
+	}
+	return groupIDs, nil
 }
