@@ -8,6 +8,7 @@ type Repository interface {
 	ListByGroupID(groupID uint64) ([]GroupMember, error)
 	ListGroupIDsByUserID(userID uint64) ([]uint64, error)
 	UpdateStatus(groupID uint64, userID uint64, status string) (int64, error)
+	UpsertMembership(groupID uint64, userID uint64, status string) error
 }
 
 type repository struct {
@@ -42,4 +43,18 @@ func (r *repository) ListGroupIDsByUserID(userID uint64) ([]uint64, error) {
 func (r *repository) UpdateStatus(groupID uint64, userID uint64, status string) (int64, error) {
 	res := r.db.Model(&GroupMember{}).Where("group_id = ? AND user_id = ?", groupID, userID).Update("status", status)
 	return res.RowsAffected, res.Error
+}
+
+func (r *repository) UpsertMembership(groupID uint64, userID uint64, status string) error {
+	gm := GroupMember{GroupID: groupID, UserID: userID}
+	// Try update first; if no rows affected, create
+	res := r.db.Model(&GroupMember{}).Where("group_id = ? AND user_id = ?", groupID, userID).Updates(map[string]interface{}{"status": status})
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		gm.Status = status
+		return r.db.Create(&gm).Error
+	}
+	return nil
 }
